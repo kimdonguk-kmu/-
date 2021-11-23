@@ -67,7 +67,7 @@ void loop() {
   float dist_cali = 100 + 300.0 / (b - a) * (raw_dist - a);
 
 // adjust duty_curr toward duty_target by duty_chg_per_interval
-  if(dist_cali > 255) {
+  if(dist_cali > 285) {
     myservo.writeMicroseconds(1425);
   }
   else {
