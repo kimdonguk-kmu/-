@@ -11,7 +11,7 @@
 #define PIN_IR A0      // [2961] 적외선센서를 아두이노 A0핀에 연결
 
 // Framework setting
-#define _DIST_TARGET 215 //[2967] 탁구공 위치까지의 거리를 255로 고정
+#define _DIST_TARGET 255 //[2967] 탁구공 위치까지의 거리를 255로 고정
          // [2952] 탁구공의 목표 위치를 25.5cm로 설정
 #define _DIST_MIN 100 // [2972] 거리 센서가 인식 가능하게 설정한 최소 거리
 #define _DIST_MAX 410 // [2972] 거리 센서가 인식 가능하게 설정한 최대 거리
@@ -34,9 +34,9 @@
 #define _INTERVAL_SERIAL 100  //[2959] 시리얼 모니터/플로터의 인터벌값 설정
 
 // PID parameters
-#define _KP 1.2 // 비례제어값
-#define _KD_L 57.0 // 미분제어 값 왼쪽 error_curr < 0 이거 값 크게
-#define _KD_R 62.0 //  미분제어 값 오른쪽 error_curr > 0 이거 값 작게
+#define _KP 1.1 // 비례제어값
+#define _KD_L 50.0 // 미분제어 값 왼쪽 error_curr < 0 이거 값 크게
+#define _KD_R 55.0 //  미분제어 값 오른쪽 error_curr > 0 이거 값 작게
 
 // 실제 거리가 100mm, 400mm일 때 센서가 읽는 값(각 a, b)
 #define a 69.42
@@ -125,12 +125,11 @@ unsigned long time_curr = millis();  // [2964] event 발생 조건 설정
      event_dist = false;
   // get a distance reading from the distance sensor
       dist_raw = ir_distance_filtered();// [2959] dist_raw에 필터링된 측정값 저장
-      dist_cali = 100 + 300.0 / (b - a) * (dist_raw - a);
       if (dist_ema == 0){            // [2959] 맨 처음
-        dist_ema = dist_cali;              // [2959] 맨 처음 ema값 = 필터링된 측정값
+        dist_ema = dist_raw;              // [2959] 맨 처음 ema값 = 필터링된 측정값
       }
       else{
-        dist_ema = alpha * dist_cali + (1-alpha) * dist_ema;   // [2959] ema 구현
+        dist_ema = alpha * dist_raw + (1-alpha) * dist_ema;   // [2959] ema 구현
       }
   // PID control logic
     error_curr = _DIST_TARGET - dist_ema;
@@ -199,5 +198,23 @@ float ir_distance(void){ // return value unit: mm
 }
 
 float ir_distance_filtered(void){ // return value unit: mm
-  return ir_distance(); // for now, just use ir_distance() without noise filter.
+                                                          // [2959] 센서가 측정한 거리를 필터링한 값을 리턴
+                                                          // [2952] ir_distance()에서 리턴된 값을 val에 대입후 필터링 수행
+  float val = ir_distance();                              // [2961] val -> float val
+  if (val < a){
+    return 100;
+  }
+  else if (val < b){
+    return 100 + 100.0 * (val - a) / (b - a);
+  }
+  else if (val < c){
+    return 200 + 100.0 * (val - b) / (c - b);           
+  }
+  else if (val < d){
+    return 300 + 100.0 * (val - c) / (d - c);
+  }
+  else{
+    return 400;
+  }
+                                                          
 }
