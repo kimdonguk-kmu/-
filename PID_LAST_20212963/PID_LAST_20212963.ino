@@ -40,10 +40,10 @@
 
 
 // PID parameters
-#define _KP 0.3 // 비례제어값
+#define _KP 1.3 // 비례제어값
 #define _KD_L 50.0 // 미분제어 값 왼쪽 error_curr < 0 이거 값 크게
 #define _KD_R 55.0 //  미분제어 값 오른쪽 error_curr > 0 이거 값 작게
-#define _KI 0.07
+#define _KI 0.075
 
 
 
