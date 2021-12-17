@@ -25,7 +25,7 @@
 
 // Servo range
 #define _DUTY_MIN 1000 // 서보의 최소 각도값
-#define _DUTY_NEU 1500 // 서보의 중간 각도값
+#define _DUTY_NEU 1450 // 서보의 중간 각도값
 #define _DUTY_MAX 2000 // 서보의 최대 각도
 
 // Servo speed control
@@ -38,21 +38,20 @@
 #define _INTERVAL_SERVO 20 // 서보 INTERVAL값 설정
 #define _INTERVAL_SERIAL 100  // 시리얼 모니터/플로터의 인터벌값 설정
 
-
 // PID parameters
-#define _KP 1.3 // 비례제어값
+#define _KP 1.2 // 비례제어값
 #define _KD_L 50.0 // 미분제어 값 왼쪽 error_curr < 0 이거 값 크게
 #define _KD_R 55.0 //  미분제어 값 오른쪽 error_curr > 0 이거 값 작게
-#define _KI 0.075
+#define _KI 0.05
 
 
 
 // [2964] 실제 거리가 100mm, 400mm일 때 센서가 읽는 값
-#define A 69.42
-#define B 145.26
-#define C 244.12
-#define D 367.41
-#define E 377.97
+#define A 69.77
+#define B 153.20
+#define C 220.08
+#define D 314.03
+#define E 323.55
 
 //////////////////////
 // global variables //
@@ -194,7 +193,7 @@ void loop() {
     }
 
     iterm += _KI*error_curr;
-    if(iterm > 5) {iterm = 0;}
+    if(iterm > 3) {iterm = 0;}
     
     control= pterm + dterm + iterm;
  
